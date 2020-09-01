@@ -5,6 +5,7 @@ import Tarefa from '../models/tarefa'
 import { logger } from '../common/logging'
 
 let listaTarefas: Array<Tarefa> = []
+const APPLICATION_JSON = 'application/json'
 
 export const salvarTarefas = (req: Req, res: Res, _next: Next) => {
   const tarefa: Tarefa = {
@@ -34,7 +35,18 @@ export const listarUmaTarefas = (req: Req, res: Res, _next: Next) => {
 export const listarTodasTarefas = (req: Req, res: Res, _next: Next) => {
   const limit = Number(req.query.limit) || Number(listaTarefas.length)
   const offset = Number(req.query.offset) || 0
-  return res.status(200).send(_(listaTarefas).drop(offset).take(limit).value())
+
+  const listaTarefasFiltro = _(listaTarefas).drop(offset).take(limit).value()
+
+  return res.format({
+    json: () => {
+      res.type(APPLICATION_JSON)
+      res.status(200).send(listaTarefasFiltro)
+    },
+    default: () => {
+      res.status(406).send({ message: 'Formato invalido' })
+    },
+  })
 }
 
 export const removerTarefas = (req: Req, res: Res, _next: Next) => {

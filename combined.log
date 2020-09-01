@@ -1046,3 +1046,44 @@
 {"message":"1 - undefined - undefined - Tue Sep 01 2020 14:27:07 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
 {"message":"1 - undefined - undefined - Tue Sep 01 2020 14:27:07 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
 {"message":"1 - 20 - Eu sou um cara legal - Tue Sep 01 2020 14:29:02 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"usuário cadastrado marcio","level":"info","service":"user-service"}
+{"message":"usuário atualizado 27","level":"info","service":"user-service"}
+{"message":"lista em memoria usuário atualizado [object Object]","level":"info","service":"user-service"}
+{"message":"1 - 20 - Eu sou um cara legal - Tue Sep 01 2020 14:34:38 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"1 - 20 - Eu sou um cara legal - Tue Sep 01 2020 14:35:01 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"usuário cadastrado marcio","level":"info","service":"user-service"}
+{"message":"usuário atualizado 28","level":"info","service":"user-service"}
+{"message":"lista em memoria usuário atualizado [object Object]","level":"info","service":"user-service"}
+{"message":"usuário cadastrado marcio","level":"info","service":"user-service"}
+{"message":"usuário atualizado 2","level":"info","service":"user-service"}
+{"message":"lista em memoria usuário atualizado [object Object]","level":"info","service":"user-service"}
+{"message":"1 - 20 - Eu sou um cara legal - Tue Sep 01 2020 14:36:09 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"usuário cadastrado marcio","level":"info","service":"user-service"}
+{"message":"usuário atualizado 19","level":"info","service":"user-service"}
+{"message":"lista em memoria usuário atualizado [object Object]","level":"info","service":"user-service"}
+{"message":"1 - 20 - Eu sou um cara legal - Tue Sep 01 2020 14:36:16 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"usuário cadastrado marcio","level":"info","service":"user-service"}
+{"message":"usuário atualizado 58","level":"info","service":"user-service"}
+{"message":"lista em memoria usuário atualizado [object Object]","level":"info","service":"user-service"}
+{"message":"1 - 20 - Eu sou um cara legal - Tue Sep 01 2020 14:36:19 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"Servidor Rodando com Sucesso! Express: http://localhost:3000","level":"info","service":"user-service"}
+{"message":"1 - undefined - undefined - Tue Sep 01 2020 14:36:56 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"1 - undefined - undefined - Tue Sep 01 2020 14:36:56 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"1 - undefined - undefined - Tue Sep 01 2020 14:36:56 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"1 - undefined - undefined - Tue Sep 01 2020 14:36:57 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"1 - undefined - undefined - Tue Sep 01 2020 14:36:57 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"1 - undefined - undefined - Tue Sep 01 2020 14:36:57 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"1 - undefined - undefined - Tue Sep 01 2020 14:36:57 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"1 - undefined - undefined - Tue Sep 01 2020 14:36:57 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"Servidor Rodando com Sucesso! Express: http://localhost:3000","level":"info","service":"user-service"}
+{"message":"usuário cadastrado marcio","level":"info","service":"user-service"}
+{"message":"usuário atualizado 55","level":"info","service":"user-service"}
+{"message":"lista em memoria usuário atualizado [object Object]","level":"info","service":"user-service"}
+{"message":"1 - 20 - Eu sou um cara legal - Tue Sep 01 2020 14:37:51 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
+{"message":"Servidor Rodando com Sucesso! Express: http://localhost:3000","level":"info","service":"user-service"}
+{"message":"Servidor Rodando com Sucesso! Express: http://localhost:3000","level":"info","service":"user-service"}
+{"message":"Servidor Rodando com Sucesso! Express: http://localhost:3000","level":"info","service":"user-service"}
+{"message":"usuário cadastrado marcio","level":"info","service":"user-service"}
+{"message":"usuário atualizado 69","level":"info","service":"user-service"}
+{"message":"lista em memoria usuário atualizado [object Object]","level":"info","service":"user-service"}
+{"message":"1 - 20 - Eu sou um cara legal - Tue Sep 01 2020 14:38:11 GMT-0300 (Brasilia Standard Time)","level":"info","service":"user-service"}
