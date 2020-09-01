@@ -4,7 +4,7 @@ import Usuario from '../../src/models/usuario'
 
 const user: Usuario = {
   // generic random value from 1 to 100 only for tests so far
-  id: Math.floor(Math.random() * 100) + 1,
+  id: 1,
   nomeUsuario: 'marcio',
   primeiroNome: 'Marcio',
   segundoNome: 'Pessoa',

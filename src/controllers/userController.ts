@@ -1,25 +1,20 @@
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction as Next, Request as Req, Response as Res } from 'express'
 import { logger } from '../common/logging'
 import Usuario from '../models/usuario'
+import { formatOutput } from '../util/formatApi'
+import { ApplicationType } from '../models/applicationType'
 
 let usuariosList: Array<Usuario> = []
+const APPLICATION_JSON = 'application/json'
 
-export const pegarUsuario = (
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-) => {
+export const pegarUsuario = (req: Req, res: Res, _next: Next) => {
   const nomeUsuario = req.params.username
   const usuario = usuariosList.find(obj => obj.nomeUsuario === nomeUsuario)
   const httpStatusCode = usuario ? 200 : 404
-  return res.status(httpStatusCode).send(usuario)
+  return formatOutput(res, usuario, httpStatusCode, ApplicationType.JSON)
 }
 
-export const adicionarUsuario = (
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-) => {
+export const adicionarUsuario = (req: Req, res: Res, _next: Next) => {
   const usuario: Usuario = {
     // generic random value from 1 to 100 only for tests so far
     id: Math.floor(Math.random() * 100) + 1,
@@ -31,14 +26,10 @@ export const adicionarUsuario = (
   }
   usuariosList.push(usuario)
   logger.info(`usuário cadastrado ${usuario.nomeUsuario}`)
-  return res.status(201).send(usuario)
+  return formatOutput(res, usuario, 201, ApplicationType.JSON)
 }
 
-export const atualizarUsuario = (
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-) => {
+export const atualizarUsuario = (req: Req, res: Res, _next: Next) => {
   const nomeUsuario = req.params.username
   const userIndex = usuariosList.findIndex(
     item => item.nomeUsuario === nomeUsuario,
@@ -54,29 +45,27 @@ export const atualizarUsuario = (
   user.email = req.body.email || user.email
   user.senha = req.body.senha || user.senha
 
-  logger.info(`usuário atualizado ${user.id}`)
   usuariosList[userIndex] = user
 
-  logger.info(`lista em memoria usuário atualizado ${usuariosList}`)
-  return res.status(204).send()
+  return formatOutput(res, {}, 204, ApplicationType.JSON)
 }
 
-// FIXME: Terminar esse metodo.
-export const removerUsuario = (
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-) => {
+export const removerUsuario = (req: Req, res: Res, _next: Next) => {
   const nomeUsuario = req.params.username
   const userIndex = usuariosList.findIndex(
     item => item.nomeUsuario === nomeUsuario,
   )
 
   if (userIndex === -1) {
-    return res.status(404).send()
+    return res.format({
+      json: () => {
+        res.type(APPLICATION_JSON)
+        res.status(404).json()
+      },
+    })
   }
 
   usuariosList = usuariosList.filter(item => item.nomeUsuario !== nomeUsuario)
 
-  return res.status(204).send()
+  return formatOutput(res, {}, 204, ApplicationType.JSON)
 }

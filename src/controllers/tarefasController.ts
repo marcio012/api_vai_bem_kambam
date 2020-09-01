@@ -2,7 +2,8 @@ import { NextFunction as Next, Request as Req, Response as Res } from 'express'
 import _ from 'lodash'
 import { TipoTarefa } from '../models/tipoTarefa'
 import Tarefa from '../models/tarefa'
-import { logger } from '../common/logging'
+import { ApplicationType } from '../models/applicationType'
+import { formatOutput } from '../util/formatApi'
 
 let listaTarefas: Array<Tarefa> = []
 const APPLICATION_JSON = 'application/json'
@@ -18,18 +19,17 @@ export const salvarTarefas = (req: Req, res: Res, _next: Next) => {
     completada: false,
   }
 
-  logger.info(
-    `${tarefa.id} - ${tarefa.idUsuario} - ${tarefa.conteudo} - ${tarefa.dataEntrega}`,
-  )
   listaTarefas.push(tarefa)
-  return res.status(201).send(tarefa)
+
+  return formatOutput(res, tarefa, 201, ApplicationType.JSON)
 }
 
 export const listarUmaTarefas = (req: Req, res: Res, _next: Next) => {
   const { id } = req.params
   const tarefa = listaTarefas.find(obj => obj.id === Number(id))
   const httpStatusCode = tarefa ? 200 : 404
-  return res.status(httpStatusCode).send(tarefa)
+
+  return formatOutput(res, tarefa, httpStatusCode, ApplicationType.JSON)
 }
 
 export const listarTodasTarefas = (req: Req, res: Res, _next: Next) => {
@@ -38,15 +38,7 @@ export const listarTodasTarefas = (req: Req, res: Res, _next: Next) => {
 
   const listaTarefasFiltro = _(listaTarefas).drop(offset).take(limit).value()
 
-  return res.format({
-    json: () => {
-      res.type(APPLICATION_JSON)
-      res.status(200).send(listaTarefasFiltro)
-    },
-    default: () => {
-      res.status(406).send({ message: 'Formato invalido' })
-    },
-  })
+  return formatOutput(res, listaTarefasFiltro, 200, ApplicationType.JSON)
 }
 
 export const removerTarefas = (req: Req, res: Res, _next: Next) => {
@@ -54,12 +46,16 @@ export const removerTarefas = (req: Req, res: Res, _next: Next) => {
   const tarefaIndex = listaTarefas.findIndex(item => item.id === id)
 
   if (tarefaIndex === -1) {
-    return res.status(404).send()
+    return res.format({
+      json: () => {
+        res.type(APPLICATION_JSON)
+        res.status(404).json()
+      },
+    })
   }
 
   listaTarefas = listaTarefas.filter(item => item.id !== id)
-
-  return res.status(204).send()
+  return formatOutput(res, listaTarefas, 204, ApplicationType.JSON)
 }
 
 export const listarTarefasPorTipo = (req: Req, res: Res, _next: Next) => {
@@ -70,5 +66,6 @@ export const listarTarefasPorTipo = (req: Req, res: Res, _next: Next) => {
   }
 
   const grupoTarefaTipo = _.groupBy(tarefasTiposLista, 'tipo')
-  return res.status(200).send(grupoTarefaTipo)
+
+  return formatOutput(res, grupoTarefaTipo, 200, ApplicationType.JSON)
 }
