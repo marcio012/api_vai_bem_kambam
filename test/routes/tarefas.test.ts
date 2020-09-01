@@ -1,6 +1,6 @@
 import request from 'supertest'
 import app from '../../src/app'
-import Usuario from '../../src/models/usuario'
+// import Usuario from '../../src/models/usuario'
 import Tarefa from '../../src/models/tarefa'
 import { TipoTarefa } from '../../src/models/tipoTarefa'
 
@@ -8,7 +8,7 @@ const tarefa: Tarefa = {
   // generic random value from 1 to 100 only for tests so far
   id: 1,
   idUsuario: 20,
-  conteudo: 1,
+  conteudo: 'Eu sou um cara legal',
   dataEntrega: new Date(),
   tipo: TipoTarefa.AFazer,
   completada: false,
@@ -20,15 +20,14 @@ describe('tarefasRoute', () => {
     expect(result.status).toEqual(404)
   })
   it('deve criar um novo pedido e envia-lo de volta', async () => {
-    const result = await request(app).post('/tarefa/').send(tarefa)
-
+    const result = await request(app).post('/tarefas').send(tarefa)
     expect(result.status).toEqual(201)
     expect(result.body.idUsuario).toEqual(tarefa.idUsuario)
     expect(result.body.completada).toEqual(false)
     expect(tarefa.id).toBe(result.body.id)
   })
   it('deve retornar o pedido criado na etapa', async () => {
-    const result = await request(app).get(`/tarefa/${tarefa.id}`)
+    const result = await request(app).get(`/tarefas/${tarefa.id}`)
 
     expect(result.status).toEqual(200)
     expect(result.body.id).toEqual(tarefa.id)
@@ -44,7 +43,7 @@ describe('tarefasRoute', () => {
   //     })
   // })
   it('deve remover uma tarefa existente', async () => {
-    const result = await request(app).del(`/tarefa/${tarefa.id}`)
+    const result = await request(app).del(`/tarefas/${tarefa.id}`)
 
     expect(result.status).toEqual(204)
   })

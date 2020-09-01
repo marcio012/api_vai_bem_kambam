@@ -1,0 +1,72 @@
+import { NextFunction, Request, Response } from 'express'
+import * as _ from 'lodash'
+import { TipoTarefa } from '../models/tipoTarefa'
+import Tarefa from '../models/tarefa'
+import { logger } from '../common/logging'
+
+let listaTarefas: Array<Tarefa> = []
+
+export const salvarTarefas = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const tarefa: Tarefa = {
+    // generic random value from 1 to 100 only for tests so far
+    id: 1,
+    idUsuario: req.body.idUsuario,
+    conteudo: req.body.conteudo,
+    dataEntrega: new Date(),
+    tipo: TipoTarefa.AFazer,
+    completada: false,
+  }
+
+  logger.info(
+    `${tarefa.id} - ${tarefa.idUsuario} - ${tarefa.conteudo} - ${tarefa.dataEntrega}`,
+  )
+  listaTarefas.push(tarefa)
+  return res.status(201).send(tarefa)
+}
+
+export const pegarTarefas = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { id } = req.params
+  const tarefa = listaTarefas.find(obj => obj.id === Number(id))
+  const httpStatusCode = tarefa ? 200 : 404
+  return res.status(httpStatusCode).send(tarefa)
+}
+
+export const removerTarefas = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const id = Number(req.params.id)
+  const tarefaIndex = listaTarefas.findIndex(item => item.id === id)
+
+  if (tarefaIndex === -1) {
+    return res.status(404).send()
+  }
+
+  listaTarefas = listaTarefas.filter(item => item.id !== id)
+
+  return res.status(204).send()
+}
+
+export const listarTarefasPorTipo = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { tipo } = req.query
+  let tarefasTiposLista = listaTarefas
+  if (tipo) {
+    tarefasTiposLista = tarefasTiposLista.filter(tarefa => tarefa.tipo === tipo)
+  }
+
+  const grupoTarefaTipo = _.groupBy(tarefasTiposLista, 'tipo')
+  return res.status(200).send(grupoTarefaTipo)
+}
