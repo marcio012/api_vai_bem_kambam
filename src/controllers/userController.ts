@@ -1,4 +1,5 @@
 import { NextFunction as Next, Request as Req, Response as Res } from 'express'
+import halson from 'halson'
 import { logger } from '../common/logging'
 import Usuario from '../models/usuario'
 import { formatOutput } from '../util/formatApi'
@@ -22,7 +23,7 @@ export const adicionarUsuario = (
   res: Res,
   _next: Next,
 ): Express.Request => {
-  const usuario: Usuario = {
+  let usuario: Usuario = {
     id: Math.floor(Math.random() * 100) + 1,
     nomeUsuario: req.body.nomeUsuario,
     primeiroNome: req.body.primeiroNome,
@@ -31,7 +32,7 @@ export const adicionarUsuario = (
     senha: req.body.senha,
   }
   usuariosList.push(usuario)
-  logger.info(`usuário cadastrado ${usuario.nomeUsuario}`)
+  usuario = halson(usuario).addLink('self', `/users/${usuario.id}`)
   return formatOutput(res, usuario, 201, 'usuario')
 }
 

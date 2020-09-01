@@ -3,7 +3,7 @@ import app from '../../src/app'
 import Usuario from '../../src/models/usuario'
 
 const user: Usuario = {
-  id: 1,
+  id: 12,
   nomeUsuario: 'marcio',
   primeiroNome: 'Marcio',
   segundoNome: 'Pessoa',

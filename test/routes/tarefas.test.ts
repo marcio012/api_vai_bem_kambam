@@ -4,8 +4,8 @@ import Tarefa from '../../src/models/tarefa'
 import { TipoTarefa } from '../../src/models/tipoTarefa'
 
 const tarefa: Tarefa = {
-  id: 1,
-  idUsuario: 20,
+  id: Math.floor(Math.random() * 100) + 1,
+  idUsuario: 12,
   conteudo: 'Eu sou um cara legal',
   dataEntrega: new Date(),
   tipo: TipoTarefa.AFazer,
