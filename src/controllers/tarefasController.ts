@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction as Next, Request as Req, Response as Res } from 'express'
 import * as _ from 'lodash'
 import { TipoTarefa } from '../models/tipoTarefa'
 import Tarefa from '../models/tarefa'
@@ -6,11 +6,7 @@ import { logger } from '../common/logging'
 
 let listaTarefas: Array<Tarefa> = []
 
-export const salvarTarefas = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const salvarTarefas = (req: Req, res: Res, _next: Next) => {
   const tarefa: Tarefa = {
     // generic random value from 1 to 100 only for tests so far
     id: 1,
@@ -28,22 +24,18 @@ export const salvarTarefas = (
   return res.status(201).send(tarefa)
 }
 
-export const pegarTarefas = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const pegarTarefas = (req: Req, res: Res, _next: Next) => {
   const { id } = req.params
   const tarefa = listaTarefas.find(obj => obj.id === Number(id))
   const httpStatusCode = tarefa ? 200 : 404
   return res.status(httpStatusCode).send(tarefa)
 }
 
-export const removerTarefas = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const listarTodasTarefas = (req: Req, res: Res, _next: Next) => {
+  return res.status(200).send(listaTarefas)
+}
+
+export const removerTarefas = (req: Req, res: Res, _next: Next) => {
   const id = Number(req.params.id)
   const tarefaIndex = listaTarefas.findIndex(item => item.id === id)
 
@@ -56,11 +48,7 @@ export const removerTarefas = (
   return res.status(204).send()
 }
 
-export const listarTarefasPorTipo = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const listarTarefasPorTipo = (req: Req, res: Res, _next: Next) => {
   const { tipo } = req.query
   let tarefasTiposLista = listaTarefas
   if (tipo) {

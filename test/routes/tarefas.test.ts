@@ -33,6 +33,12 @@ describe('tarefasRoute', () => {
     expect(result.body.id).toEqual(tarefa.id)
     expect(result.body.tipo).toEqual(tarefa.tipo)
   })
+
+  it('deve retornar todas as tarefas', async () => {
+    const result = await request(app).get(`/tarefas`)
+    expect(result.status).toEqual(200)
+    expect(result.body.length).toEqual(1)
+  })
   // it('deve retornar o inventário para todos os usuários', async () => {
   //   return chai
   //     .request(app)
@@ -42,17 +48,29 @@ describe('tarefasRoute', () => {
   //       expect(res.body[20].length).to.be.equal(1)
   //     })
   // })
+
+  it('deve retornar 200 e a coleção filtrada pelo tipo.', async () => {
+    const result = await request(app).get(`/tarefas/agrupadas?tipo=A%20FAZER`)
+    expect(result.status).toEqual(200)
+    expect(result.body).toEqual(expect.not.objectContaining(tarefa))
+  })
+
+  it('não deve retornar tarefas porque o limit é maior que o tamanho da matriz de tarefas', async () => {
+    const result = await request(app).get(`/tarefas/?offset=2&limit=2`)
+    expect(result.status).toEqual(200)
+    expect(result.body).toEqual(expect.not.objectContaining(tarefa))
+  })
+
   it('deve remover uma tarefa existente', async () => {
     const result = await request(app).del(`/tarefas/${tarefa.id}`)
-
     expect(result.status).toEqual(204)
   })
-  // it('deve retornar 404 quando estiver tentando remover uma tarefa porque o pedido não existe', async () => {
-  //   return chai
-  //     .request(app)
-  //     .del(`/store/orders/${order.id}`)
-  //     .then(res => {
-  //       expect(res.status).to.be.equal(404)
-  //     })
-  // })
+
+  it('deve retornar 404 quando estiver tentando remover uma tarefa com id que não existe', async () => {
+    const result = await request(app).del(`/tarefas/${tarefa.id}`)
+    expect(result.status).toEqual(404)
+    // expect(result.body.message).toBe({
+    //   message: 'Não encotramos nada aqui!',
+    // })
+  })
 })
