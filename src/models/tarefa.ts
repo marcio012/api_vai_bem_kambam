@@ -1,6 +1,6 @@
 import { TipoTarefa } from './tipoTarefa'
 
-export default interface Order {
+export default interface Tarefa {
   id: number
   idUsuario: number
   conteudo: number

@@ -6,7 +6,7 @@ describe('baseRoute', () => {
     const result = await request(app).get('/')
     expect(result.status).toEqual(200)
   })
-  it('should respond with success message', async () => {
+  it('dever ter a mesma mensagem', async () => {
     const result = await request(app).get('/')
     expect(result.text).toEqual('Api Teste Vai Bem!')
   })
