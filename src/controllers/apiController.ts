@@ -1,5 +1,6 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request as Req, Response as Res, NextFunction as Next } from 'express'
+import { formatOutput } from '../util/formatApi'
 
-export const getApi = (req: Request, res: Response, _next: NextFunction) => {
-  return res.status(200).json({ title: 'Order API' })
+export const getApi = (req: Req, res: Res, _next: Next): Express.Request => {
+  return formatOutput(res, { title: 'Bem Vindo' }, 200, 'api')
 }

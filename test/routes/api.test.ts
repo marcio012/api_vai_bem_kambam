@@ -8,6 +8,6 @@ describe('Rota da api', () => {
   })
   it('dever ter a mesma mensagem', async () => {
     const result = await request(app).get('/api')
-    expect(result.body).toEqual({ title: 'Order API' })
+    expect(result.body).toEqual({ title: 'Bem Vindo' })
   })
 })
