@@ -2,13 +2,16 @@ import { NextFunction as Next, Request as Req, Response as Res } from 'express'
 import _ from 'lodash'
 import { TipoTarefa } from '../models/tipoTarefa'
 import Tarefa from '../models/tarefa'
-import { ApplicationType } from '../models/applicationType'
 import { formatOutput } from '../util/formatApi'
 
 let listaTarefas: Array<Tarefa> = []
 const APPLICATION_JSON = 'application/json'
 
-export const salvarTarefas = (req: Req, res: Res, _next: Next) => {
+export const salvarTarefas = (
+  req: Req,
+  res: Res,
+  _next: Next,
+): Express.Request => {
   const tarefa: Tarefa = {
     // generic random value from 1 to 100 only for tests so far
     id: 1,
@@ -21,27 +24,39 @@ export const salvarTarefas = (req: Req, res: Res, _next: Next) => {
 
   listaTarefas.push(tarefa)
 
-  return formatOutput(res, tarefa, 201, ApplicationType.JSON)
+  return formatOutput(res, tarefa, 201, 'tarefa')
 }
 
-export const listarUmaTarefas = (req: Req, res: Res, _next: Next) => {
+export const listarUmaTarefas = (
+  req: Req,
+  res: Res,
+  _next: Next,
+): Express.Request => {
   const { id } = req.params
   const tarefa = listaTarefas.find(obj => obj.id === Number(id))
   const httpStatusCode = tarefa ? 200 : 404
 
-  return formatOutput(res, tarefa, httpStatusCode, ApplicationType.JSON)
+  return formatOutput(res, tarefa, httpStatusCode, 'tarefa')
 }
 
-export const listarTodasTarefas = (req: Req, res: Res, _next: Next) => {
+export const listarTodasTarefas = (
+  req: Req,
+  res: Res,
+  _next: Next,
+): Express.Request => {
   const limit = Number(req.query.limit) || Number(listaTarefas.length)
   const offset = Number(req.query.offset) || 0
 
   const listaTarefasFiltro = _(listaTarefas).drop(offset).take(limit).value()
 
-  return formatOutput(res, listaTarefasFiltro, 200, ApplicationType.JSON)
+  return formatOutput(res, listaTarefasFiltro, 200, 'tarefa')
 }
 
-export const removerTarefas = (req: Req, res: Res, _next: Next) => {
+export const removerTarefas = (
+  req: Req,
+  res: Res,
+  _next: Next,
+): Express.Request => {
   const id = Number(req.params.id)
   const tarefaIndex = listaTarefas.findIndex(item => item.id === id)
 
@@ -55,10 +70,14 @@ export const removerTarefas = (req: Req, res: Res, _next: Next) => {
   }
 
   listaTarefas = listaTarefas.filter(item => item.id !== id)
-  return formatOutput(res, listaTarefas, 204, ApplicationType.JSON)
+  return formatOutput(res, listaTarefas, 204, 'tarefa')
 }
 
-export const listarTarefasPorTipo = (req: Req, res: Res, _next: Next) => {
+export const listarTarefasPorTipo = (
+  req: Req,
+  res: Res,
+  _next: Next,
+): Express.Request => {
   const { tipo } = req.query
   let tarefasTiposLista = listaTarefas
   if (tipo) {
@@ -67,5 +86,5 @@ export const listarTarefasPorTipo = (req: Req, res: Res, _next: Next) => {
 
   const grupoTarefaTipo = _.groupBy(tarefasTiposLista, 'tipo')
 
-  return formatOutput(res, grupoTarefaTipo, 200, ApplicationType.JSON)
+  return formatOutput(res, grupoTarefaTipo, 200, 'tarefa')
 }

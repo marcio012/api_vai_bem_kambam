@@ -7,14 +7,22 @@ import { ApplicationType } from '../models/applicationType'
 let usuariosList: Array<Usuario> = []
 const APPLICATION_JSON = 'application/json'
 
-export const pegarUsuario = (req: Req, res: Res, _next: Next) => {
+export const pegarUsuario = (
+  req: Req,
+  res: Res,
+  _next: Next,
+): Express.Request => {
   const nomeUsuario = req.params.username
   const usuario = usuariosList.find(obj => obj.nomeUsuario === nomeUsuario)
   const httpStatusCode = usuario ? 200 : 404
-  return formatOutput(res, usuario, httpStatusCode, ApplicationType.JSON)
+  return formatOutput(res, usuario, httpStatusCode, 'usuario')
 }
 
-export const adicionarUsuario = (req: Req, res: Res, _next: Next) => {
+export const adicionarUsuario = (
+  req: Req,
+  res: Res,
+  _next: Next,
+): Express.Request => {
   const usuario: Usuario = {
     // generic random value from 1 to 100 only for tests so far
     id: Math.floor(Math.random() * 100) + 1,
@@ -26,10 +34,14 @@ export const adicionarUsuario = (req: Req, res: Res, _next: Next) => {
   }
   usuariosList.push(usuario)
   logger.info(`usuário cadastrado ${usuario.nomeUsuario}`)
-  return formatOutput(res, usuario, 201, ApplicationType.JSON)
+  return formatOutput(res, usuario, 201, 'usuario')
 }
 
-export const atualizarUsuario = (req: Req, res: Res, _next: Next) => {
+export const atualizarUsuario = (
+  req: Req,
+  res: Res,
+  _next: Next,
+): Express.Request => {
   const nomeUsuario = req.params.username
   const userIndex = usuariosList.findIndex(
     item => item.nomeUsuario === nomeUsuario,
@@ -47,10 +59,14 @@ export const atualizarUsuario = (req: Req, res: Res, _next: Next) => {
 
   usuariosList[userIndex] = user
 
-  return formatOutput(res, {}, 204, ApplicationType.JSON)
+  return formatOutput(res, {}, 204, 'usuario')
 }
 
-export const removerUsuario = (req: Req, res: Res, _next: Next) => {
+export const removerUsuario = (
+  req: Req,
+  res: Res,
+  _next: Next,
+): Express.Request => {
   const nomeUsuario = req.params.username
   const userIndex = usuariosList.findIndex(
     item => item.nomeUsuario === nomeUsuario,
@@ -67,5 +83,5 @@ export const removerUsuario = (req: Req, res: Res, _next: Next) => {
 
   usuariosList = usuariosList.filter(item => item.nomeUsuario !== nomeUsuario)
 
-  return formatOutput(res, {}, 204, ApplicationType.JSON)
+  return formatOutput(res, {}, 204, 'usuario')
 }
