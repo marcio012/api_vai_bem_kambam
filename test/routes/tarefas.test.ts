@@ -1,11 +1,9 @@
 import request from 'supertest'
 import app from '../../src/app'
-// import Usuario from '../../src/models/usuario'
 import Tarefa from '../../src/models/tarefa'
 import { TipoTarefa } from '../../src/models/tipoTarefa'
 
 const tarefa: Tarefa = {
-  // generic random value from 1 to 100 only for tests so far
   id: 1,
   idUsuario: 20,
   conteudo: 'Eu sou um cara legal',
@@ -39,16 +37,6 @@ describe('tarefasRoute', () => {
     expect(result.status).toEqual(200)
     expect(result.body.length).toEqual(1)
   })
-  // it('deve retornar o inventário para todos os usuários', async () => {
-  //   return chai
-  //     .request(app)
-  //     .get(`/tarefa`)
-  //     .then(res => {
-  //       expect(res.status).to.be.equal(200)
-  //       expect(res.body[20].length).to.be.equal(1)
-  //     })
-  // })
-
   it('deve retornar 200 e a coleção filtrada pelo tipo.', async () => {
     const result = await request(app).get(`/tarefas/agrupadas?tipo=A%20FAZER`)
     expect(result.status).toEqual(200)
@@ -69,8 +57,5 @@ describe('tarefasRoute', () => {
   it('deve retornar 404 quando estiver tentando remover uma tarefa com id que não existe', async () => {
     const result = await request(app).del(`/tarefas/${tarefa.id}`)
     expect(result.status).toEqual(404)
-    // expect(result.body.message).toBe({
-    //   message: 'Não encotramos nada aqui!',
-    // })
   })
 })

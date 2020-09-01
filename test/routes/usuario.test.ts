@@ -3,7 +3,6 @@ import app from '../../src/app'
 import Usuario from '../../src/models/usuario'
 
 const user: Usuario = {
-  // generic random value from 1 to 100 only for tests so far
   id: 1,
   nomeUsuario: 'marcio',
   primeiroNome: 'Marcio',

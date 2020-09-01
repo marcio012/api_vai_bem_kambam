@@ -13,7 +13,6 @@ export const salvarTarefas = (
   _next: Next,
 ): Express.Request => {
   const tarefa: Tarefa = {
-    // generic random value from 1 to 100 only for tests so far
     id: 1,
     idUsuario: req.body.idUsuario,
     conteudo: req.body.conteudo,

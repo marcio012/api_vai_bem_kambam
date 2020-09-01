@@ -2,7 +2,6 @@ import { NextFunction as Next, Request as Req, Response as Res } from 'express'
 import { logger } from '../common/logging'
 import Usuario from '../models/usuario'
 import { formatOutput } from '../util/formatApi'
-import { ApplicationType } from '../models/applicationType'
 
 let usuariosList: Array<Usuario> = []
 const APPLICATION_JSON = 'application/json'
@@ -24,7 +23,6 @@ export const adicionarUsuario = (
   _next: Next,
 ): Express.Request => {
   const usuario: Usuario = {
-    // generic random value from 1 to 100 only for tests so far
     id: Math.floor(Math.random() * 100) + 1,
     nomeUsuario: req.body.nomeUsuario,
     primeiroNome: req.body.primeiroNome,
