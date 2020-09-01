@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import Usuario from '../models/usuario'
 
-const usuariosList: Array<Usuario> = []
+let usuariosList: Array<Usuario> = []
 
 export const getUser = (req: Request, res: Response, next: NextFunction) => {
   const { nomeUsuario } = req.params
@@ -47,14 +47,16 @@ export const updateUser = (req: Request, res: Response, next: NextFunction) => {
 
 // FIXME: Terminar esse metodo.
 export const removeUser = (req: Request, res: Response, next: NextFunction) => {
-  const { username } = req.params
-  const userIndex = users.findIndex(item => item.username === username)
+  const { nomeUsuario } = req.params
+  const userIndex = usuariosList.findIndex(
+    item => item.nomeUsuario === nomeUsuario,
+  )
 
   if (userIndex === -1) {
     return res.status(404).send()
   }
 
-  users = users.filter(item => item.username !== username)
+  usuariosList = usuariosList.filter(item => item.nomeUsuario !== nomeUsuario)
 
   return res.status(204).send()
 }
