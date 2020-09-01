@@ -1,5 +1,5 @@
 export enum TipoTarefa {
-  AFazer = 'A FAZER',
+  AFazer = 'AFAZER',
   Fazendo = 'FAZENDO',
   Pausado = 'PAUSADO',
   Concluido = 'CONCLUIDO',
