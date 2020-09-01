@@ -6,7 +6,7 @@ export class TarefasRoute {
     app.route('/tarefas/agrupadas').get(tarefasController.listarTarefasPorTipo)
     app.route('/tarefas').post(tarefasController.salvarTarefas)
     app.route('/tarefas').get(tarefasController.listarTodasTarefas)
-    app.route('/tarefas/:id').get(tarefasController.pegarTarefas)
+    app.route('/tarefas/:id').get(tarefasController.listarUmaTarefas)
     app.route('/tarefas/:id').delete(tarefasController.removerTarefas)
   }
 }

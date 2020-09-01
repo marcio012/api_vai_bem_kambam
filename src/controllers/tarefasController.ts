@@ -1,5 +1,5 @@
 import { NextFunction as Next, Request as Req, Response as Res } from 'express'
-import * as _ from 'lodash'
+import _ from 'lodash'
 import { TipoTarefa } from '../models/tipoTarefa'
 import Tarefa from '../models/tarefa'
 import { logger } from '../common/logging'
@@ -24,7 +24,7 @@ export const salvarTarefas = (req: Req, res: Res, _next: Next) => {
   return res.status(201).send(tarefa)
 }
 
-export const pegarTarefas = (req: Req, res: Res, _next: Next) => {
+export const listarUmaTarefas = (req: Req, res: Res, _next: Next) => {
   const { id } = req.params
   const tarefa = listaTarefas.find(obj => obj.id === Number(id))
   const httpStatusCode = tarefa ? 200 : 404
@@ -32,7 +32,9 @@ export const pegarTarefas = (req: Req, res: Res, _next: Next) => {
 }
 
 export const listarTodasTarefas = (req: Req, res: Res, _next: Next) => {
-  return res.status(200).send(listaTarefas)
+  const limit = Number(req.query.limit) || Number(listaTarefas.length)
+  const offset = Number(req.query.offset) || 0
+  return res.status(200).send(_(listaTarefas).drop(offset).take(limit).value())
 }
 
 export const removerTarefas = (req: Req, res: Res, _next: Next) => {

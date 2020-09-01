@@ -58,7 +58,7 @@ describe('tarefasRoute', () => {
   it('não deve retornar tarefas porque o limit é maior que o tamanho da matriz de tarefas', async () => {
     const result = await request(app).get(`/tarefas/?offset=2&limit=2`)
     expect(result.status).toEqual(200)
-    expect(result.body).toEqual(expect.not.objectContaining(tarefa))
+    expect(result.body).toEqual(expect.arrayContaining([]))
   })
 
   it('deve remover uma tarefa existente', async () => {
