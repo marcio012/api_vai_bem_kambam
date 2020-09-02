@@ -26,7 +26,8 @@ rules:
     "no-param-reassign": 0,
     "no-shadow": 0,
     "@typescript-eslint/ban-types": off,
-    "consistent-return" : off
+    "consistent-return": 0,
+    "no-underscore-dangle": 0,
   }
 settings:
   import/resolver:
