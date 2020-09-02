@@ -34,9 +34,11 @@ class App {
   }
 
   private mongoSetup(db: string): void {
+    mongoose.Promise = global.Promise
     mongoose
       .connect(this.mongoUrl, {
         useNewUrlParser: true,
+        useCreateIndex: true,
         useUnifiedTopology: true,
       })
       .then(() => {
