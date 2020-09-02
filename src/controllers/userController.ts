@@ -1,86 +1,71 @@
 import { NextFunction as Next, Request as Req, Response as Res } from 'express'
 import halson from 'halson'
-import { logger } from '../common/logging'
-import Usuario from '../models/usuario'
+import { UsuarioModel } from '../database/schemas/usuarios'
 import { formatOutput } from '../util/formatApi'
 
-let usuariosList: Array<Usuario> = []
-const APPLICATION_JSON = 'application/json'
+import { logger } from '../common/logging'
 
-export const pegarUsuario = (
-  req: Req,
-  res: Res,
-  _next: Next,
-): Express.Request => {
-  const nomeUsuario = req.params.username
-  const usuario = usuariosList.find(obj => obj.nomeUsuario === nomeUsuario)
-  const httpStatusCode = usuario ? 200 : 404
-  return formatOutput(res, usuario, httpStatusCode, 'usuario')
+export function pegarUsuario(req: Req, res: Res, _next: Next): void {
+  const { nomeusuario } = req.params
+
+  UsuarioModel.findOne({ nomeusuario }, (_err, usuario: UsuarioModel) => {
+    if (!usuario) {
+      return res.status(404).send()
+    }
+
+    let usuarioJson = usuario.toJSON()
+    const idUsuario = usuario.id.toString()
+
+    usuarioJson = halson(usuario).addLink('self', `/usuario/${idUsuario}`)
+    return formatOutput(res, usuario, 200, 'usuario')
+  })
 }
 
-export const adicionarUsuario = (
-  req: Req,
-  res: Res,
-  _next: Next,
-): Express.Request => {
-  let usuario: Usuario = {
-    id: Math.floor(Math.random() * 100) + 1,
-    nomeUsuario: req.body.nomeUsuario,
-    primeiroNome: req.body.primeiroNome,
-    segundoNome: req.body.segundoNome,
-    email: req.body.email,
-    senha: req.body.senha,
-  }
-  usuariosList.push(usuario)
-  usuario = halson(usuario).addLink('self', `/users/${usuario.id}`)
-  return formatOutput(res, usuario, 201, 'usuario')
+export function adicionarUsuario(req: Req, res: Res, _next: Next): void {
+  const usuarioSalvar = req.body
+
+  const novoUsuario = new UsuarioModel(usuarioSalvar)
+
+  novoUsuario.save((_err, usuario: UsuarioModel) => {
+    // eslint-disable-next-line no-param-reassign
+    usuario = halson(usuario.toJSON()).addLink('self', `/usuario/${usuario.id}`)
+    return formatOutput(res, usuario, 201, 'usuario')
+  })
 }
 
-export const atualizarUsuario = (
-  req: Req,
-  res: Res,
-  _next: Next,
-): Express.Request => {
-  const nomeUsuario = req.params.username
-  const userIndex = usuariosList.findIndex(
-    item => item.nomeUsuario === nomeUsuario,
-  )
+export function atualizarUsuario(req: Req, res: Res, _next: Next): void {
+  const nome = req.params.nomeusuario
+  const nomeusuario = nome
+  UsuarioModel.findOne({ nomeusuario }, (_err, usuario: UsuarioModel) => {
+    if (!usuario) {
+      return res.status(404).send()
+    }
 
-  if (userIndex === -1) {
-    return res.status(404).send()
-  }
-  const user = usuariosList[userIndex]
-  user.nomeUsuario = req.body.nomeUsuario || user.nomeUsuario
-  user.primeiroNome = req.body.primeiroNome || user.primeiroNome
-  user.segundoNome = req.body.segundoNome || user.segundoNome
-  user.email = req.body.email || user.email
-  user.senha = req.body.senha || user.senha
+    usuario.nomeusuario = req.body.nomeusuario || usuario.nomeusuario
+    usuario.primeiroNome = req.body.primeiroNome || usuario.primeiroNome
+    usuario.segundoNome = req.body.segundoNome || usuario.segundoNome
+    usuario.email = req.body.email || usuario.email
+    usuario.senha = req.body.senha || usuario.senha
 
-  usuariosList[userIndex] = user
-
-  return formatOutput(res, {}, 204, 'usuario')
-}
-
-export const removerUsuario = (
-  req: Req,
-  res: Res,
-  _next: Next,
-): Express.Request => {
-  const nomeUsuario = req.params.username
-  const userIndex = usuariosList.findIndex(
-    item => item.nomeUsuario === nomeUsuario,
-  )
-
-  if (userIndex === -1) {
-    return res.format({
-      json: () => {
-        res.type(APPLICATION_JSON)
-        res.status(404).json()
-      },
+    usuario.save(_err => {
+      return res.status(404).send()
     })
-  }
 
-  usuariosList = usuariosList.filter(item => item.nomeUsuario !== nomeUsuario)
+    return formatOutput(res, usuario, 204, 'usuario')
+  })
+}
 
-  return formatOutput(res, {}, 204, 'usuario')
+export function removerUsuario(req: Req, res: Res, _next: Next) {
+  const { id } = req.params
+  const idUsuario = id
+
+  UsuarioModel.findOne({ idUsuario: id }, (_err, usuario) => {
+    if (!usuario) {
+      // return res.status(404).send()
+      return formatOutput(res, {}, 204, '')
+    }
+    return usuario.remove(_err => {
+      res.status(204).send()
+    })
+  })
 }
