@@ -4,7 +4,7 @@ import Usuario from '../../models/usuario'
 export interface UsuarioModel extends Usuario, Document { }
 
 export const UsuarioSchema: Schema = new Schema({
-  nomeUsuario: String,
+  nomeusuario: String,
   primeiroNome: String,
   segundoNome: String,
   email: String,

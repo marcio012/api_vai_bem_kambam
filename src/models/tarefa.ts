@@ -1,9 +1,9 @@
 import { TipoTarefa } from './tipoTarefa'
 
 export default interface Tarefa {
-  idUsuario: number
-  conteudo: string
+  idUsuario: String
+  conteudo: String
   dataEntrega: Date
   tipo: TipoTarefa
-  completada: boolean
+  completada: Boolean
 }

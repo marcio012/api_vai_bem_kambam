@@ -1,8 +1,7 @@
 export default interface Usuario {
-  // id: number
-  nomeUsuario: string
-  primeiroNome: string
-  segundoNome: string
-  email: string
-  senha: string
+  nomeusuario: String
+  primeiroNome: String
+  segundoNome: String
+  email: String
+  senha: String
 }
