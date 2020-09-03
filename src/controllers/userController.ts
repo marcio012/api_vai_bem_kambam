@@ -1,11 +1,16 @@
 import { NextFunction as Next, Request as Req, Response as Res } from 'express'
+import * as bcrypt from 'bcrypt'
+import * as jwt from 'jsonwebtoken'
+// import lodash from 'lodash/extend'
 import halson from 'halson'
-import { UsuarioModel } from '../database/schemas/usuarios'
-import { formatOutput } from '../util/formatApi'
 
+import { formatOutput } from '../util/formatApi'
+import errorHandler from '../helpers/dbErrorHandler'
 import { logger } from '../common/logging'
 
-export function pegarUsuario(req: Req, res: Res, _next: Next): void {
+import { UsuarioModel } from '../database/schemas/usuario'
+
+export const pegarUm = (req: Req, res: Res, _next: Next) => {
   const { nomeusuario } = req.params
 
   UsuarioModel.findOne({ nomeusuario }, (_err, usuario: UsuarioModel) => {
@@ -13,30 +18,34 @@ export function pegarUsuario(req: Req, res: Res, _next: Next): void {
       return res.status(404).send()
     }
 
-    let usuarioJson = usuario.toJSON()
-    const idUsuario = usuario.id.toString()
+    usuario = usuario.toJSON()
+    usuario._id = usuario._id.toString()
 
-    usuarioJson = halson(usuario).addLink('self', `/usuario/${idUsuario}`)
+    usuario = halson(usuario).addLink('self', `/usuario/${usuario._id}`)
+    logger.info(`Usuário ${usuario.nomeusuario} listado`)
     return formatOutput(res, usuario, 200, 'usuario')
   })
 }
 
-export function adicionarUsuario(req: Req, res: Res, _next: Next): void {
-  const usuarioSalvar = req.body
+export const adicionar = (req: Req, res: Res, next: Next) => {
+  const usuario = new UsuarioModel(req.body)
 
-  const novoUsuario = new UsuarioModel(usuarioSalvar)
+  usuario.password = bcrypt.hashSync(usuario.password, 10)
 
-  novoUsuario.save((_err, usuario: UsuarioModel) => {
-    // eslint-disable-next-line no-param-reassign
-    usuario = halson(usuario.toJSON()).addLink('self', `/usuario/${usuario.id}`)
-    return formatOutput(res, usuario, 201, 'usuario')
+  usuario.save((error, usuario) => {
+    if (error) {
+      return res.status(500).send(error)
+    }
+    usuario = halson(usuario.toJSON()).addLink('self', `/users/${usuario._id}`)
+    logger.info(`Usuário ${usuario.nomeusuario} salvo na base de dados`)
+    return formatOutput(res, usuario, 201, 'user')
   })
 }
 
-export function atualizarUsuario(req: Req, res: Res, _next: Next): void {
-  const nome = req.params.nomeusuario
-  const nomeusuario = nome
-  UsuarioModel.findOne({ nomeusuario }, (_err, usuario: UsuarioModel) => {
+export const atualizar = (req: Req, res: Res, _next: Next) => {
+  const { nomeusuario } = req.params
+
+  UsuarioModel.findOne({ nomeusuario }, (_err, usuario) => {
     if (!usuario) {
       return res.status(404).send()
     }
@@ -45,7 +54,8 @@ export function atualizarUsuario(req: Req, res: Res, _next: Next): void {
     usuario.primeiroNome = req.body.primeiroNome || usuario.primeiroNome
     usuario.segundoNome = req.body.segundoNome || usuario.segundoNome
     usuario.email = req.body.email || usuario.email
-    usuario.senha = req.body.senha || usuario.senha
+    usuario.password = req.body.password || usuario.password
+    usuario.updated = req.body.updated || new Date()
 
     usuario.save(_err => {
       return res.status(404).send()
@@ -55,17 +65,15 @@ export function atualizarUsuario(req: Req, res: Res, _next: Next): void {
   })
 }
 
-export function removerUsuario(req: Req, res: Res, _next: Next) {
-  const { id } = req.params
-  const idUsuario = id
+export const remover = (req: Req, res: Res, _next: Next) => {
+  const { nomeusuario } = req.params
 
-  UsuarioModel.findOne({ idUsuario: id }, (_err, usuario) => {
+  UsuarioModel.findOne({ nomeusuario }, (err, usuario) => {
     if (!usuario) {
-      // return res.status(404).send()
-      return formatOutput(res, {}, 204, '')
+      return formatOutput(res, {}, 404, 'Usuário não encontrado!')
     }
-    return usuario.remove(_err => {
-      res.status(204).send()
+    usuario.remove(_err => {
+      return res.status(204).send()
     })
   })
 }

@@ -5,5 +5,7 @@ export interface IUsuario extends mongoose.Document {
   primeiroNome: String
   segundoNome: String
   email: String
-  senha: String
+  password: String
+  created: Date
+  updated: Date
 }
