@@ -5,7 +5,7 @@ import _ from 'lodash'
 import { logger } from '../common/logging'
 import { formatOutput } from '../util/formatApi'
 import { UsuarioModel } from '../database/schemas/usuario'
-import { TarefaModel } from '../database/schemas/tarefas'
+import { TarefaModel, TarefasSchema } from '../database/schemas/tarefas'
 
 export function adicionar(req: Req, res: Res, _next: Next) {
   const { idUsuario } = req.body
@@ -64,11 +64,36 @@ export function removerTarefas(req: Req, res: Res, next: Next) {
   })
 }
 
-export function listarTarefasPorTipo(req: Req, res: Res) {
-  const tipoTarefa: any = req.query.tipo
-  const tipo = tipoTarefa
+// export function listarTarefasPorTipo(req: Req, res: Res) {
+//   const { tipo } = req.query
+//   let tarefasTiposLista: Array<TarefaModel>
+
+//   if (tipo) {
+//     tarefasTiposLista = tarefasTiposLista.filter(tarefa => tarefa.tipo === tipo)
+//   }
+//   TarefaModel.find(tipo, (_err, tarefas) => {
+//     tarefas = _.groupBy(tarefas, 'idUsuario')
+//     return formatOutput(res, tarefas, 200, 'tarefa-tipo')
+//   })
+// }
+
+export const listarTarefasPorTipo = (
+  req: Req,
+  res: Res,
+  _next: Next,
+): Express.Request => {
+  const { tipo } = req.query
+
   TarefaModel.find(tipo, (_err, tarefas) => {
     tarefas = _.groupBy(tarefas, 'idUsuario')
     return formatOutput(res, tarefas, 200, 'tarefa-tipo')
   })
+
+  if (tipo) {
+    tarefasTiposLista = tarefasTiposLista.filter(tarefa => tarefa.tipo === tipo)
+  }
+
+  const grupoTarefaTipo = _.groupBy(tarefasTiposLista, 'tipo')
+
+  return formatOutput(res, grupoTarefaTipo, 200, 'tarefa-tipo')
 }
