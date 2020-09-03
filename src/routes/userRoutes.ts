@@ -9,5 +9,8 @@ export class UserRoute {
       .patch(userController.atualizar)
       .delete(userController.remover)
       .get(userController.pegarUm)
+    app
+      .route('/usuarios/tarefas/:idusuario')
+      .get(userController.listarTodasTarefasDoUsuario)
   }
 }

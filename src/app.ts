@@ -3,7 +3,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import { APIRoute } from './routes/api'
 import { UserRoute } from './routes/userRoutes'
-// import { TarefasRoute } from './routes/tarefasRoutes'
+import { TarefasRoute } from './routes/tarefasRoutes'
 
 import { logger } from './common/logging'
 
@@ -14,7 +14,7 @@ class App {
 
   public apiRoutes: APIRoute = new APIRoute()
 
-  // public tarefasRoutes: TarefasRoute = new TarefasRoute()
+  public tarefasRoutes: TarefasRoute = new TarefasRoute()
 
   public mongoUrl = `mongodb://localhost:27017/vai-bem-api`
 
@@ -23,7 +23,7 @@ class App {
     this.app.use(bodyParser.json())
     this.apiRoutes.routes(this.app)
     this.userRoutes.routes(this.app)
-    // this.tarefasRoutes.routes(this.app)
+    this.tarefasRoutes.routes(this.app)
 
     this.mongoSetup(this.mongoUrl)
   }

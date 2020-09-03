@@ -9,6 +9,7 @@ import errorHandler from '../helpers/dbErrorHandler'
 import { logger } from '../common/logging'
 
 import { UsuarioModel } from '../database/schemas/usuario'
+import { TarefaModel } from '../database/schemas/tarefas'
 
 export const pegarUm = (req: Req, res: Res, _next: Next) => {
   const { nomeusuario } = req.params
@@ -75,5 +76,28 @@ export const remover = (req: Req, res: Res, _next: Next) => {
     usuario.remove(_err => {
       return res.status(204).send()
     })
+  })
+}
+
+export function listarTodasTarefasDoUsuario(req: Req, res: Res, next: Next) {
+  const { idusuario } = req.params
+  const limit: number = Number(req.query.limit) || 0
+  const offset: number = Number(req.query.offset) || 0
+
+  TarefaModel.find({}, null, { skip: offset, limit }).then(tarefas => {
+    logger.info(tarefas)
+    if (tarefas) {
+      let tarefasFiltradasPorIdUsuario = tarefas.filter(function (tarefa) {
+        return true
+      })
+      tarefasFiltradasPorIdUsuario = tarefasFiltradasPorIdUsuario.filter(
+        tarefa => {
+          return halson(tarefa)
+            .addLink('self', { href: `/ usuarios / ${tarefa.idUsuario}` })
+            .addLink('tarefas', `/ tarefas / ${tarefa?._id}`)
+        },
+      )
+      return formatOutput(res, tarefasFiltradasPorIdUsuario, 200, 'tarefa')
+    }
   })
 }

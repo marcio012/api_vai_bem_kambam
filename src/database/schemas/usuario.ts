@@ -33,6 +33,6 @@ export const UsuarioSchema: Schema = new Schema({
 UsuarioSchema.plugin(uniqueValidator)
 
 export const UsuarioModel: Model<UsuarioModel> = model<UsuarioModel>(
-  'User',
+  'Usuario',
   UsuarioSchema,
 )

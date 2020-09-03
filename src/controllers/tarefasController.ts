@@ -1,55 +1,47 @@
-import { NextFunction, Request, Response } from 'express'
+import { NextFunction as Next, Request as Req, Response as Res } from 'express'
 import halson from 'halson'
 import _ from 'lodash'
-import { formatOutput } from '../util/formatApi'
-import { UsuarioModel } from '../database/schemas/usuarios'
-import { TarefasModel } from '../database/schemas/tarefas'
 
-export function criarUmaTarefa(
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-) {
+import { logger } from '../common/logging'
+import { formatOutput } from '../util/formatApi'
+import { UsuarioModel } from '../database/schemas/usuario'
+import { TarefaModel } from '../database/schemas/tarefas'
+
+export function adicionar(req: Req, res: Res, _next: Next) {
   const { idUsuario } = req.body
 
   UsuarioModel.findById(idUsuario, (_err, usuario) => {
     if (!usuario) {
       return res.status(404).send()
     }
-    const novaTarefa = new TarefasModel(req.body)
+    const novaTarefa = new TarefaModel(req.body)
     novaTarefa.save((_err, tarefa) => {
       tarefa = halson(tarefa.toJSON())
         .addLink('self', `/tarefas/${tarefa.id}`)
         .addLink('usuarios', { href: `/usuarios/${tarefa.idUsuario}` })
-      return formatOutput(res, novaTarefa, 201, 'tarefa')
+      return formatOutput(res, tarefa, 201, 'tarefa')
     })
   })
 }
 
-export function listarUmaTarefas(
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-): void {
+export function listarPorId(req: Req, res: Res, _next: Next) {
   const { id } = req.params
 
-  TarefasModel.findById(id, (_err, tarefa) => {
+  TarefaModel.findById(id, (_err, tarefa) => {
     if (!tarefa) {
       return res.status(404).send()
     }
+    logger.info(tarefa)
     tarefa = halson(tarefa).addLink('self', `/tarefas/${tarefa?.id}`)
     return formatOutput(res, tarefa, 200, 'tarefa')
   })
 }
-export function listarTodasTarefas(
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-): void {
+
+export function listarTodasTarefas(req: Req, res: Res, _next: Next) {
   const limit: number = Number(req.query.limit) || 0
   const offset: number = Number(req.query.offset) || 0
 
-  TarefasModel.find({}, null, { skip: offset, limit }).then(tarefas => {
+  TarefaModel.find({}, null, { skip: offset, limit }).then(tarefas => {
     if (tarefas) {
       tarefas = tarefas.map(tarefa => {
         return halson(tarefa)
@@ -61,14 +53,10 @@ export function listarTodasTarefas(
   })
 }
 
-export function removerTarefas(
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-): void {
-  const id = Number(req.params.id)
+export function removerTarefas(req: Req, res: Res, next: Next) {
+  const { id } = req.params
 
-  TarefasModel.findById(id, (_err, tarefas) => {
+  TarefaModel.findById(id, (_err, tarefas) => {
     if (!tarefas) {
       return res.status(404).send()
     }
@@ -76,14 +64,10 @@ export function removerTarefas(
   })
 }
 
-export function listarTarefasPorTipo(
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-): void {
+export function listarTarefasPorTipo(req: Req, res: Res) {
   const tipoTarefa: any = req.query.tipo
 
-  TarefasModel.find(tipoTarefa, (_err, tarefas: any) => {
+  TarefaModel.find((tipoTarefa: tipo), (_err, tarefas) => {
     tarefas = _.groupBy(tarefas, 'idUsuario')
     return formatOutput(res, tarefas, 200, 'tarefa-tipo')
   })
