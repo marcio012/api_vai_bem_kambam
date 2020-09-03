@@ -66,8 +66,8 @@ export function removerTarefas(req: Req, res: Res, next: Next) {
 
 export function listarTarefasPorTipo(req: Req, res: Res) {
   const tipoTarefa: any = req.query.tipo
-
-  TarefaModel.find((tipoTarefa: tipo), (_err, tarefas) => {
+  const tipo = tipoTarefa
+  TarefaModel.find(tipo, (_err, tarefas) => {
     tarefas = _.groupBy(tarefas, 'idUsuario')
     return formatOutput(res, tarefas, 200, 'tarefa-tipo')
   })
