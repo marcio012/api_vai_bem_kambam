@@ -1,9 +1,6 @@
-import { NextFunction as Next, Request as Req, Response as Res } from 'express'
 import * as bcrypt from 'bcrypt'
+import { Request, Response, NextFunction } from 'express'
 import * as jwt from 'jsonwebtoken'
-// import lodash from 'lodash/extend'
-import halson from 'halson'
-
 import { formatOutput } from '../util/formatApi'
 import errorHandler from '../helpers/dbErrorHandler'
 import { logger } from '../common/logging'
@@ -11,7 +8,10 @@ import { logger } from '../common/logging'
 import { UsuarioModel } from '../database/schemas/usuario'
 import { TarefaModel } from '../database/schemas/tarefas'
 
-export const pegarUm = (req: Req, res: Res, _next: Next) => {
+// eslint-disable-next-line import/order
+import halson = require('halson')
+
+export const pegarUm = (req: Request, res: Response, next: NextFunction) => {
   const { nomeusuario } = req.params
 
   UsuarioModel.findOne({ nomeusuario }, (_err, usuario: UsuarioModel) => {
@@ -28,7 +28,7 @@ export const pegarUm = (req: Req, res: Res, _next: Next) => {
   })
 }
 
-export const adicionar = (req: Req, res: Res, next: Next) => {
+export const adicionar = (req: Request, res: Response, next: NextFunction) => {
   const usuario = new UsuarioModel(req.body)
 
   usuario.password = bcrypt.hashSync(usuario.password, 10)
@@ -43,30 +43,30 @@ export const adicionar = (req: Req, res: Res, next: Next) => {
   })
 }
 
-export const atualizar = (req: Req, res: Res, _next: Next) => {
-  const { nomeusuario } = req.params
+export const atualizar = (req: Request, res: Response, next: NextFunction) => {
+  // const { nomeusuario } = req.params
 
-  UsuarioModel.findOne({ nomeusuario }, (_err, usuario) => {
-    if (!usuario) {
-      return res.status(404).send()
-    }
-
-    usuario.nomeusuario = req.body.nomeusuario || usuario.nomeusuario
-    usuario.primeiroNome = req.body.primeiroNome || usuario.primeiroNome
-    usuario.segundoNome = req.body.segundoNome || usuario.segundoNome
-    usuario.email = req.body.email || usuario.email
-    usuario.password = req.body.password || usuario.password
-    usuario.updated = req.body.updated || new Date()
-
-    usuario.save(_err => {
-      return res.status(404).send()
-    })
-
-    return formatOutput(res, usuario, 204, 'usuario')
-  })
+  UsuarioModel.findOne(
+    { nomeusuario: req.params.nomeusuario },
+    (_err, usuario) => {
+      if (!usuario) {
+        return res.status(404).send()
+      }
+      usuario.nomeusuario = req.body.nomeusuario || usuario.nomeusuario
+      usuario.primeiroNome = req.body.primeiroNome || usuario.primeiroNome
+      usuario.segundoNome = req.body.segundoNome || usuario.segundoNome
+      usuario.email = req.body.email || usuario.email
+      usuario.password = req.body.password || usuario.password
+      usuario.updated = req.body.updated || new Date()
+      usuario.save(_err => {
+        return res.status(404).send()
+      })
+      return formatOutput(res, usuario, 204, 'usuario')
+    },
+  )
 }
 
-export const remover = (req: Req, res: Res, _next: Next) => {
+export const remover = (req: Request, res: Response, next: NextFunction) => {
   const { nomeusuario } = req.params
 
   UsuarioModel.findOne({ nomeusuario }, (err, usuario) => {
@@ -79,7 +79,11 @@ export const remover = (req: Req, res: Res, _next: Next) => {
   })
 }
 
-export function listarTodasTarefasDoUsuario(req: Req, res: Res, next: Next) {
+export function listarTarefasDoUsuario(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   const { idusuario } = req.params
   const limit: number = Number(req.query.limit) || 0
   const offset: number = Number(req.query.offset) || 0
@@ -99,5 +103,27 @@ export function listarTodasTarefasDoUsuario(req: Req, res: Res, next: Next) {
       )
       return formatOutput(res, tarefasFiltradasPorIdUsuario, 200, 'tarefa')
     }
+  })
+}
+
+export const login = (req: Request, res: Response, next: NextFunction) => {
+  const { username } = req.query
+  const { password } = req.query
+
+  UsuarioModel.findOne({ username }, (err, user) => {
+    if (!user) {
+      return res.status(404).send()
+    }
+
+    const validate = bcrypt.compareSync(password, user.password.valueOf())
+
+    if (validate) {
+      const body = { _id: user._id, email: user.email }
+
+      const token = jwt.sign({ user: body }, 'top_secret')
+
+      return res.json({ token })
+    }
+    return res.status(401).send()
   })
 }

@@ -1,6 +1,6 @@
 import * as bodyParser from 'body-parser'
-import express from 'express'
-import mongoose from 'mongoose'
+import * as express from 'express'
+import * as mongoose from 'mongoose'
 import { APIRoute } from './routes/api'
 import { UserRoute } from './routes/userRoutes'
 import { TarefasRoute } from './routes/tarefasRoutes'

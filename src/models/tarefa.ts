@@ -5,6 +5,6 @@ export default interface Tarefa {
   titulo: String
   conteudo: String
   dataEntrega: Date
-  tipo: TipoTarefa
+  status: TipoTarefa
   completada: Boolean
 }

@@ -1,8 +1,9 @@
 import { Document, Model, model, Schema } from 'mongoose'
-import uniqueValidator from 'mongoose-unique-validator'
-import { IUsuario } from '../../models/usuario'
+import * as uniqueValidator from 'mongoose-unique-validator'
+import { TarefasSchema } from './tarefas'
+import Usuario from '../../models/usuario'
 
-export interface UsuarioModel extends IUsuario, Document { }
+export interface UsuarioModel extends Usuario, Document { }
 
 export const UsuarioSchema: Schema = new Schema({
   nomeusuario: {
@@ -15,7 +16,7 @@ export const UsuarioSchema: Schema = new Schema({
   email: {
     type: String,
     trim: true,
-    unique: 'Email already exists',
+    unique: true,
     match: [/.+@.+\..+/, 'Please fill a valid email address'],
     required: 'Email is required',
   },
@@ -23,6 +24,7 @@ export const UsuarioSchema: Schema = new Schema({
     type: String,
     required: 'Password is required',
   },
+  tarefas: [{ type: Schema.Types.ObjectId, ref: 'Tarefa' }],
   created: {
     type: Date,
     default: Date.now,

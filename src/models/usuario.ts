@@ -1,6 +1,4 @@
-import mongoose from 'mongoose'
-
-export interface IUsuario extends mongoose.Document {
+export default interface Usuario {
   nomeusuario: String
   primeiroNome: String
   segundoNome: String
