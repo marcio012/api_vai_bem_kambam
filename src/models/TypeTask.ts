@@ -1,0 +1,6 @@
+export enum TypeTask {
+  AFAZER = 'AFAZER',
+  FAZENDO = 'FAZENDO',
+  PAUSADO = 'PAUSADO',
+  CONCLUIDO = 'CONCLUIDO',
+}

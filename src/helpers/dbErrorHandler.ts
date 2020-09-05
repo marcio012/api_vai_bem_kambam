@@ -1,4 +1,4 @@
-const getUniqueErrorMessage = err => {
+const getUniqueErrorMessage = (err: string | any) => {
   let output
   try {
     const fieldName = err.message.substring(
@@ -17,7 +17,7 @@ const getUniqueErrorMessage = err => {
 /**
  * Get the error message from error object
  */
-const getErrorMessage = err => {
+const getErrorMessage = (err: string | any) => {
   let message = ''
 
   if (err.code) {

@@ -1,4 +1,4 @@
-import * as passport from 'passport'
+import passport from 'passport'
 import { Strategy, ExtractJwt } from 'passport-jwt'
 
 export class PassportConfiguration {

@@ -1,116 +1,127 @@
-import * as bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt'
 import { Request, Response, NextFunction } from 'express'
+
 import * as jwt from 'jsonwebtoken'
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import halson from 'halson'
+
 import { formatOutput } from '../util/formatApi'
 import errorHandler from '../helpers/dbErrorHandler'
 import { logger } from '../common/logging'
 
-import { UsuarioModel } from '../database/schemas/usuario'
-import { TarefaModel } from '../database/schemas/tarefas'
+import { TaskModel } from '../database/schemas/task'
+import { UserModel } from '../database/schemas/user'
 
-// eslint-disable-next-line import/order
-import halson = require('halson')
+export async function getOne(
+  req: Request,
+  res: Response,
+  _next: NextFunction,
+): Promise<void> {
+  const { username } = req.params
 
-export const pegarUm = (req: Request, res: Response, next: NextFunction) => {
-  const { nomeusuario } = req.params
-
-  UsuarioModel.findOne({ nomeusuario }, (_err, usuario: UsuarioModel) => {
-    if (!usuario) {
+  UserModel.findOne({ username }, (err, user) => {
+    if (!user) {
       return res.status(404).send()
     }
+    // user = user.toJSON()
 
-    usuario = usuario.toJSON()
-    usuario._id = usuario._id.toString()
-
-    usuario = halson(usuario).addLink('self', `/usuario/${usuario._id}`)
-    logger.info(`Usuário ${usuario.nomeusuario} listado`)
-    return formatOutput(res, usuario, 200, 'usuario')
+    user._id = user._id.toString()
+    logger.info(`User ${user.username} list`)
+    user = halson(user).addLink('self', `/users/${user._id}`)
+    return formatOutput(res, user, 200, 'user')
   })
 }
 
-export const adicionar = (req: Request, res: Response, next: NextFunction) => {
-  const usuario = new UsuarioModel(req.body)
+// async createUser(req: Request, res: Response): Promise < void> {
+//   const newUser = new User(req.body);
+//   await newUser.save();
+//   res.json({ status: 200, newUser });
+// }
 
-  usuario.password = bcrypt.hashSync(usuario.password, 10)
+export async function add(
+  req: Request,
+  res: Response,
+  _next: NextFunction,
+): Promise<void> {
+  const user = new UserModel(req.body)
 
-  usuario.save((error, usuario) => {
+  user.password = bcrypt.hashSync(user.password, 10)
+
+  user.save((error, user) => {
     if (error) {
       return res.status(500).send(error)
     }
-    usuario = halson(usuario.toJSON()).addLink('self', `/users/${usuario._id}`)
-    logger.info(`Usuário ${usuario.nomeusuario} salvo na base de dados`)
-    return formatOutput(res, usuario, 201, 'user')
+    user = halson(user.toJSON()).addLink('self', `/users/${user._id}`)
+    logger.info(`User ${user.username} salvo na base de dados`)
+    return formatOutput(res, user, 201, 'user')
   })
 }
 
-export const atualizar = (req: Request, res: Response, next: NextFunction) => {
-  // const { nomeusuario } = req.params
+export function update(req: Request, res: Response, _next: NextFunction): void {
+  const { username } = req.params
 
-  UsuarioModel.findOne(
-    { nomeusuario: req.params.nomeusuario },
-    (_err, usuario) => {
-      if (!usuario) {
-        return res.status(404).send()
-      }
-      usuario.nomeusuario = req.body.nomeusuario || usuario.nomeusuario
-      usuario.primeiroNome = req.body.primeiroNome || usuario.primeiroNome
-      usuario.segundoNome = req.body.segundoNome || usuario.segundoNome
-      usuario.email = req.body.email || usuario.email
-      usuario.password = req.body.password || usuario.password
-      usuario.updated = req.body.updated || new Date()
-      usuario.save(_err => {
-        return res.status(404).send()
-      })
-      return formatOutput(res, usuario, 204, 'usuario')
-    },
-  )
+  UserModel.findOne({ username }, (_err, user) => {
+    if (!user) {
+      return res.status(404).send()
+    }
+    user.username = req.body.username || user.username
+    user.firstName = req.body.firstName || user.firstName
+    user.lastName = req.body.lastName || user.lastName
+    user.email = req.body.email || user.email
+    user.password = req.body.password || user.password
+    user.updated = req.body.updated || new Date()
+    user.save(_err => {
+      return res.status(204).send()
+    })
+    return formatOutput(res, user, 204, 'user')
+  })
 }
 
-export const remover = (req: Request, res: Response, next: NextFunction) => {
-  const { nomeusuario } = req.params
+export function remove(req: Request, res: Response, _next: NextFunction): void {
+  const { username } = req.params
 
-  UsuarioModel.findOne({ nomeusuario }, (err, usuario) => {
-    if (!usuario) {
-      return formatOutput(res, {}, 404, 'Usuário não encontrado!')
+  UserModel.findOne({ username }, (_err, user) => {
+    if (!user) {
+      return formatOutput(res, {}, 404, 'User not found!')
     }
-    usuario.remove(_err => {
+    user.remove(_err => {
       return res.status(204).send()
     })
   })
 }
 
-export function listarTarefasDoUsuario(
+export function getTaskByUser(
   req: Request,
   res: Response,
-  next: NextFunction,
-) {
-  const { idusuario } = req.params
+  _next: NextFunction,
+): void {
+  const { userId } = req.params
   const limit: number = Number(req.query.limit) || 0
   const offset: number = Number(req.query.offset) || 0
 
-  TarefaModel.find({}, null, { skip: offset, limit }).then(tarefas => {
-    logger.info(tarefas)
-    if (tarefas) {
-      let tarefasFiltradasPorIdUsuario = tarefas.filter(function (tarefa) {
+  TaskModel.find({}, null, { skip: offset, limit }).then(task => {
+    logger.info(task)
+    if (task) {
+      let taskFilterUserId = task.filter(function (task) {
         return true
       })
-      tarefasFiltradasPorIdUsuario = tarefasFiltradasPorIdUsuario.filter(
-        tarefa => {
-          return halson(tarefa)
-            .addLink('self', { href: `/ usuarios / ${tarefa.idUsuario}` })
-            .addLink('tarefas', `/ tarefas / ${tarefa?._id}`)
-        },
-      )
-      return formatOutput(res, tarefasFiltradasPorIdUsuario, 200, 'tarefa')
+      taskFilterUserId = taskFilterUserId.filter(task => {
+        return halson(task)
+          .addLink('self', { href: `/user/${task.userId}` })
+          .addLink('tasks', `/tasks/${task?._id}`)
+      })
+      return formatOutput(res, taskFilterUserId, 200, 'tarefa')
     }
   })
 }
 
-export const login = (req: Request, res: Response, next: NextFunction) => {
-  const { username } = req.query
+export function login(req: Request, res: Response, _next: NextFunction): void {
   const { password } = req.query
+  const username = String(req.query.username)
 
-  UsuarioModel.findOne({ username }, (err, user) => {
+  UserModel.findOne({ username }, (err, user) => {
     if (!user) {
       return res.status(404).send()
     }
@@ -118,7 +129,7 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
     const validate = bcrypt.compareSync(password, user.password.valueOf())
 
     if (validate) {
-      const body = { _id: user._id, email: user.email }
+      const body = { id: user.id, email: user.email }
 
       const token = jwt.sign({ user: body }, 'top_secret')
 

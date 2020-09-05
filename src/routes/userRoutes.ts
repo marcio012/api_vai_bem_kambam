@@ -3,26 +3,24 @@ import * as userController from '../controllers/userController'
 import { PassportConfiguration } from '../util/passportConfiguration'
 
 export class UserRoute {
-  public routes(app) {
-    app.route('/usuarios/login').get(userController.login)
-    app.route('/usuarios').post(userController.adicionar)
+  public routes(app: any): void {
+    app.route('/users/login').get(userController.login)
+    app.route('/users').post(userController.add)
     // .get(userController.listar)
     app
-      .route('/usuarios/:nomeusuario')
+      .route('/users/:username')
+      .get(
+        passport.authenticate('jwt', { session: false }),
+        userController.getOne,
+      )
       .patch(
         passport.authenticate('jwt', { session: false }),
-        userController.atualizar,
+        userController.update,
       )
       .delete(
         passport.authenticate('jwt', { session: false }),
-        userController.remover,
+        userController.remove,
       )
-      .get(
-        passport.authenticate('jwt', { session: false }),
-        userController.pegarUm,
-      )
-    app
-      .route('/usuarios/tarefas/:idusuario')
-      .get(userController.listarTarefasDoUsuario)
+    app.route('/users/tasks/:idUser').get(userController.getTaskByUser)
   }
 }
